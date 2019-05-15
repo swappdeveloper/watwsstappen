@@ -2,6 +2,7 @@
 -------------------------------------------------------------------------------------------------------------------------------------
 2. Maak een 'WebSocketManager.cs' aan, en voeg het onderstaande stuk code toe:
 -------------------------------------------------------------------------------------------------------------------------------------
+```c#
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -67,7 +68,7 @@ namespace WebsocketWithMiddleware
         }
     }
 }
-
+```
 -------------------------------------------------------------------------------------------------------------------------------------
 3. Maak een folder aan en geef het volgende naam 'Middelwares'
 
