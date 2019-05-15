@@ -75,6 +75,7 @@ namespace WebsocketWithMiddleware
 -------------------------------------------------------------------------------------------------------------------------------------
 4. In de 'Middelwares' map maak een nieuwe bestand aan en geeft de volgende naam 'WebSocketMiddleware.cs', vervolgens voeg de onderstaande code toe:
 -------------------------------------------------------------------------------------------------------------------------------------
+```c#
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -126,24 +127,26 @@ namespace WebsocketWithMiddleware.Middlewares
         }
     }
 }
-
+```
 -------------------------------------------------------------------------------------------------------------------------------------
 
 5. Open de 'Startup.cs' bestand en voeg het volgende toe voor 'app.UseMvc()' in ConfigureServices method. Wel de juiste using gebruiken.
 -------------------------------------------------------------------------------------------------------------------------------------
+```c#
 services.AddSingleton<WebSocketManager>();
-  
+```  
 -------------------------------------------------------------------------------------------------------------------------------------
 
 6. Open de 'Startup.cs' bestand en voeg het volgende toe voor 'app.UseMvc()' in Configure method. Wel de juiste using gebruiken.
 -------------------------------------------------------------------------------------------------------------------------------------
+```c#
 app.UseStaticFiles();
 app.UseWebSockets();
 app.Map("/websocket", a =>
 {
     a.UseMiddleware<WebSocketMiddleware>();
 });
-
+```
 -------------------------------------------------------------------------------------------------------------------------------------
 
 7. Maak een 'wwwroot' map aan.
@@ -152,7 +155,7 @@ app.Map("/websocket", a =>
 8. In de 'wwwroot' map, maak een index.html bestand aan en voeg de volgende stuk code toe:
 
 -------------------------------------------------------------------------------------------------------------------------------------
-
+```html
 <!DOCTYPE html>
 <html>
 
@@ -204,3 +207,4 @@ app.Map("/websocket", a =>
     </script>
 </body>
 </html>
+```
