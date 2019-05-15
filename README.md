@@ -15,38 +15,30 @@ namespace WebsocketWithMiddleware
     public class WebSocketManager
     {
         private ConcurrentDictionary<string, WebSocket> _sockets = new ConcurrentDictionary<string, WebSocket>();
-
         public WebSocket GetSocketById(string id)
         {
             return _sockets.FirstOrDefault(p => p.Key == id).Value;
         }
-
         public ConcurrentDictionary<string, WebSocket> GetAll()
         {
             return _sockets;
         }
-
         public string GetId(WebSocket socket)
         {
             return _sockets.FirstOrDefault(p => p.Value == socket).Key;
         }
-
         public string AddSocket(WebSocket socket)
         {
             var socketId = CreateConnectionId();
             _sockets.TryAdd(socketId, socket);
-
             return socketId;
         }
-
         public async Task RemoveSocket(string id)
         {
             WebSocket socket;
             _sockets.TryRemove(id, out socket);
-
             await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by the WebSocketManager", CancellationToken.None);
         }
-
         public async Task SendMessageToAllAsync(string message)
         {
             foreach (var pair in _sockets)
@@ -55,13 +47,11 @@ namespace WebsocketWithMiddleware
                     await SendMessageAsync(pair.Value, message);
             }
         }
-
         // Private Methods
         private async Task SendMessageAsync(WebSocket socket, string message)
         {
             if (socket.State != WebSocketState.Open)
                 return;
-
             await socket.SendAsync(
                 buffer: new ArraySegment<byte>(
                     array: Encoding.ASCII.GetBytes(message),
@@ -71,7 +61,6 @@ namespace WebsocketWithMiddleware
                 endOfMessage: true,
                 cancellationToken: CancellationToken.None);
         }
-
         private string CreateConnectionId()
         {
             return Guid.NewGuid().ToString();
@@ -100,13 +89,11 @@ namespace WebsocketWithMiddleware.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly WebSocketManager _webSocketManager;
-
         public WebSocketMiddleware(RequestDelegate next, WebSocketManager webSocketManager)
         {
             _next = next;
             _webSocketManager = webSocketManager;
         }
-
         public async Task Invoke(HttpContext context)
         {
             if (!context.WebSockets.IsWebSocketRequest)
@@ -114,10 +101,8 @@ namespace WebsocketWithMiddleware.Middlewares
                 await _next.Invoke(context);
                 return;
             }
-
             var socket = await context.WebSockets.AcceptWebSocketAsync();
             var id = _webSocketManager.AddSocket(socket);
-
             await ReceiveAsync(socket, async (result, buffer) =>
             {
                 if (result.MessageType == WebSocketMessageType.Close)
@@ -127,21 +112,14 @@ namespace WebsocketWithMiddleware.Middlewares
                 }
             });
         }
-
         private async Task ReceiveAsync(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
         {
             var buffer = new byte[1024 * 4];
-
             while (socket.State == WebSocketState.Open)
             {
-
-
                 var result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-
                 var message = $"{ _webSocketManager.GetId(socket) } said: {Encoding.UTF8.GetString(buffer, 0, result.Count)}";
-
                 await _webSocketManager.SendMessageToAllAsync(message);
-
                 handleMessage(result, buffer);
             }
         }
@@ -186,9 +164,7 @@ app.Map("/websocket", a =>
     <h1>This should be mapped to "/websocket"</h1>
     <input type=text id="textInput" placeholder="Enter your text" />
     <button id="sendButton">Send</button>
-
     <ul id="messages"></ul>
-
     <script language="javascript" type="text/javascript">
         var uri = "ws://" + window.location.host + "/websocket";
         function connect() {
@@ -211,10 +187,8 @@ app.Map("/websocket", a =>
         var list = document.getElementById("messages");
         var button = document.getElementById("sendButton");
         button.addEventListener("click", function() {
-
             var input = document.getElementById("textInput");
             sendMessage(input.value);
-
             input.value = "";
         });
         function sendMessage(message) {
